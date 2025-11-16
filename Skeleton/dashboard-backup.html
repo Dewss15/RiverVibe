@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - RiverVibe</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    /* Dashboard-specific styles */
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e1f5fe 100%);
+      min-height: 100vh;
+    }
+
+    .dashboard-header {
+      padding: 40px 20px;
+      text-align: center;
+      background: linear-gradient(90deg, #0096c7, #00b4d8);
+      color: white;
+      margin-bottom: 40px;
+    }
+
+    .dashboard-header h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.5rem;
+      margin: 0;
+      margin-bottom: 15px;
+    }
+
+    .dashboard-header p {
+      max-width: 600px;
+      margin: 0 auto;
+      opacity: 0.9;
+    }
+
+    .river-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      padding: 0 20px;
+      max-width: 1200px;
+      margin: 0 auto 40px;
+    }
+
+    .river-card {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 10px 25px rgba(0, 150, 199, 0.1);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .river-image {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    .river-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, #0096c7, #00b4d8);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .river-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0, 150, 199, 0.15);
+    }
+
+    .river-card:hover::before {
+      opacity: 1;
+    }
+
+    .river-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      color: #0096c7;
+      margin: 0 0 10px 0;
+    }
+
+    .location {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #64748b;
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .stat {
+      text-align: center;
+      padding: 12px;
+      background: #f8fafc;
+      border-radius: 12px;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-bottom: 5px;
+    }
+
+    .stat-value {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #0096c7;
+    }
+
+    .report-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .report-card {
+      background: white;
+      border-radius: 20px;
+      padding: 35px;
+      box-shadow: 0 15px 35px rgba(0, 150, 199, 0.1);
+      margin-bottom: 40px;
+    }
+
+    .report-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #f1f5f9;
+    }
+
+    .report-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.75rem;
+      color: #0f172a;
+      margin: 0;
+    }
+
+    .report-date {
+      color: #64748b;
+      font-size: 0.95rem;
+    }
+
+    .report-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+
+    .report-item {
+      background: #f8fafc;
+      padding: 20px;
+      border-radius: 12px;
+    }
+
+    .report-item h3 {
+      font-size: 1rem;
+      color: #64748b;
+      margin: 0 0 10px 0;
+    }
+
+    .report-item p {
+      color: #0f172a;
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .severity-indicator {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .severity-high {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .severity-medium {
+      background: #fef3c7;
+      color: #d97706;
+    }
+
+    .actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    .action-button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .primary-action {
+      background: #0096c7;
+      color: white;
+    }
+
+    .secondary-action {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+
+    .action-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Social Share Menu */
+    .social-share-menu {
+      display: none;
+      position: absolute;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      padding: 15px;
+      z-index: 100;
+    }
+
+    .social-share-menu.active {
+      display: block;
+    }
+
+    .social-share-button {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 15px;
+      width: 100%;
+      border: none;
+      background: none;
+      cursor: pointer;
+      transition: background 0.3s;
+      border-radius: 8px;
+    }
+
+    .social-share-button:hover {
+      background: #f1f5f9;
+    }
+
+    .social-share-button i {
+      font-size: 1.2rem;
+    }
+
+    .social-share-button.facebook i { color: #1877f2; }
+    .social-share-button.twitter i { color: #1da1f2; }
+    .social-share-button.whatsapp i { color: #25d366; }
+    .social-share-button.telegram i { color: #0088cc; }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+    }
+
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 20px;
+      padding: 0;
+      width: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      background: linear-gradient(90deg, #0096c7, #00b4d8);
+      color: white;
+      padding: 25px 30px;
+      border-radius: 20px 20px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.75rem;
+      margin: 0;
+    }
+
+    .close-button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 2rem;
+      cursor: pointer;
+      padding: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s;
+    }
+
+    .close-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .modal-body {
+      padding: 30px;
+    }
+
+    .detail-section {
+      margin-bottom: 25px;
+    }
+
+    .detail-section h3 {
+      color: #0096c7;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem;
+      margin: 0 0 15px 0;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 8px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .detail-item {
+      background: #f8fafc;
+      padding: 15px;
+      border-radius: 10px;
+    }
+
+    .detail-label {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+
+    .detail-value {
+      color: #0f172a;
+      font-weight: 600;
+    }
+
+    .severity-critical { color: #dc2626; }
+    .severity-high { color: #ea580c; }
+    .severity-medium { color: #d97706; }
+    .severity-low { color: #16a34a; }
+
+    .timeline {
+      border-left: 3px solid #0096c7;
+      padding-left: 20px;
+    }
+
+    .timeline-item {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -26px;
+      top: 5px;
+      width: 12px;
+      height: 12px;
+      background: #0096c7;
+      border-radius: 50%;
+    }
+
+    .timeline-date {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-bottom: 5px;
+    }
+
+    .timeline-content {
+      color: #0f172a;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .river-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .report-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .action-button {
+        width: 100%;
+      }
+
+      .social-share-menu {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border-radius: 12px 12px 0 0;
+      }
+
+      .modal-content {
+        width: 95%;
+        margin: 10px;
+      }
+
+      .modal-header {
+        padding: 20px;
+      }
+
+      .modal-title {
+        font-size: 1.5rem;
+      }
+
+      .modal-body {
+        padding: 20px;
+      }
+
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo">RiverVibe</div>
+    <ul>
+      <!-- Fixed static dashboard nav to PHP pages -->
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <!-- Updated legacy nav to target dashboard.php -->
+      <li><a href="dashboard.html" class="active">Dashboard</a></li>
+      <li><a href="feedback.html">Feedback</a></li>
+      <li><a href="success.html">Success Stories</a></li>
+    </ul>
+  </nav>
+
+  <header class="dashboard-header">
+    <h1>River Pollution Dashboard</h1>
+    <p>Track and monitor pollution reports across major Indian rivers</p>
+  </header>
+
+  <div class="river-cards">
+    <div class="river-card" onclick="showReport('ganga')">
+      <h2 class="river-name">Ganga</h2>
+      <div class="location">
+        <i class="fas fa-map-marker-alt"></i>
+        Varanasi, Uttar Pradesh
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Reports</div>
+          <div class="stat-value">156</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Status</div>
+          <div class="stat-value">High</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="river-card" onclick="showReport('yamuna')">
+      <h2 class="river-name">Yamuna</h2>
+      <div class="location">
+        <i class="fas fa-map-marker-alt"></i>
+        Delhi
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Reports</div>
+          <div class="stat-value">234</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Status</div>
+          <div class="stat-value">High</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="river-card" onclick="showReport('mithi')">
+      <h2 class="river-name">Mithi</h2>
+      <div class="location">
+        <i class="fas fa-map-marker-alt"></i>
+        Mumbai, Maharashtra
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Reports</div>
+          <div class="stat-value">89</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Status</div>
+          <div class="stat-value">Medium</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="river-card" onclick="showReport('sabarmati')">
+      <h2 class="river-name">Sabarmati</h2>
+      <div class="location">
+        <i class="fas fa-map-marker-alt"></i>
+        Ahmedabad, Gujarat
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Reports</div>
+          <div class="stat-value">127</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Status</div>
+          <div class="stat-value">High</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="river-card" onclick="showReport('brahmaputra')">
+      <h2 class="river-name">Brahmaputra</h2>
+      <div class="location">
+        <i class="fas fa-map-marker-alt"></i>
+        Guwahati, Assam
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Reports</div>
+          <div class="stat-value">92</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Status</div>
+          <div class="stat-value">Medium</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="river-card" onclick="showReport('cauvery')">
+      <h2 class="river-name">Cauvery</h2>
+      <div class="location">
+        <i class="fas fa-map-marker-alt"></i>
+        Mysuru, Karnataka
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Reports</div>
+          <div class="stat-value">145</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Status</div>
+          <div class="stat-value">High</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="river-card" onclick="showReport('godavari')">
+      <h2 class="river-name">Godavari</h2>
+      <div class="location">
+        <i class="fas fa-map-marker-alt"></i>
+        Nashik, Maharashtra
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Reports</div>
+          <div class="stat-value">112</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Status</div>
+          <div class="stat-value">Medium</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="river-card" onclick="showReport('narmada')">
+      <h2 class="river-name">Narmada</h2>
+      <div class="location">
+        <i class="fas fa-map-marker-alt"></i>
+        Jabalpur, Madhya Pradesh
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Reports</div>
+          <div class="stat-value">78</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Status</div>
+          <div class="stat-value">Low</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Goan Rivers -->
+    <div class="river-card" onclick="showReport('mandovi')">
+      <h2 class="river-name">Mandovi</h2>
+      <div class="location">
+        <i class="fas fa-map-marker-alt"></i>
+        Panaji, Goa
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Reports</div>
+          <div class="stat-value">45</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Status</div>
+          <div class="stat-value">Medium</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="river-card" onclick="showReport('zuari')">
+      <h2 class="river-name">Zuari</h2>
+      <div class="location">
+        <i class="fas fa-map-marker-alt"></i>
+        Vasco da Gama, Goa
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Reports</div>
+          <div class="stat-value">38</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Status</div>
+          <div class="stat-value">High</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="river-card" onclick="showReport('chapora')">
+      <h2 class="river-name">Chapora</h2>
+      <div class="location">
+        <i class="fas fa-map-marker-alt"></i>
+        Morjim, Goa
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Reports</div>
+          <div class="stat-value">27</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Status</div>
+          <div class="stat-value">Medium</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="report-container">
+    <!-- Ganga Report -->
+    <div id="ganga-report" class="report-card">
+      <div class="report-header">
+        <h2 class="report-title">Latest Report: Ganga River</h2>
+        <span class="report-date">Oct 20, 2025</span>
+      </div>
+      <div class="report-grid">
+        <div class="report-item">
+          <h3>Pollution Type</h3>
+          <p>Industrial & Chemical Waste</p>
+        </div>
+        <div class="report-item">
+          <h3>Location</h3>
+          <p>Varanasi Ghat Area</p>
+        </div>
+        <div class="report-item">
+          <h3>Severity</h3>
+          <span class="severity-indicator severity-high">High Risk</span>
+        </div>
+        <div class="report-item">
+          <h3>Reports Count</h3>
+          <p>15 reports in last 24hrs</p>
+        </div>
+      </div>
+      <div class="report-item">
+        <h3>Description</h3>
+        <p>Multiple instances of chemical discharge observed near the industrial area. Water shows visible discoloration and strong chemical odor. Local wildlife affected. Immediate attention required.</p>
+      </div>
+      <div class="actions">
+        <button class="action-button primary-action" onclick="openModal('ganga')">View Full Report</button>
+        <button class="action-button secondary-action" onclick="toggleShareMenu(this, 'ganga')">Share Report</button>
+      </div>
+    </div>
+
+    <!-- Yamuna Report -->
+    <div id="yamuna-report" class="report-card" style="display: none;">
+      <div class="report-header">
+        <h2 class="report-title">Latest Report: Yamuna River</h2>
+        <span class="report-date">Oct 20, 2025</span>
+      </div>
+      <div class="report-grid">
+        <div class="report-item">
+          <h3>Pollution Type</h3>
+          <p>Sewage & Domestic Waste</p>
+        </div>
+        <div class="report-item">
+          <h3>Location</h3>
+          <p>Okhla Barrage, Delhi</p>
+        </div>
+        <div class="report-item">
+          <h3>Severity</h3>
+          <span class="severity-indicator severity-high">High Risk</span>
+        </div>
+        <div class="report-item">
+          <h3>Reports Count</h3>
+          <p>22 reports in last 24hrs</p>
+        </div>
+      </div>
+      <div class="report-item">
+        <h3>Description</h3>
+        <p>Heavy sewage discharge continues to pollute the river. Foam formation and black water observed. Urgent intervention needed to address untreated sewage disposal.</p>
+      </div>
+      <div class="actions">
+        <button class="action-button primary-action" onclick="openModal('yamuna')">View Full Report</button>
+        <button class="action-button secondary-action" onclick="toggleShareMenu(this, 'yamuna')">Share Report</button>
+      </div>
+    </div>
+
+    <!-- Mithi Report -->
+    <div id="mithi-report" class="report-card" style="display: none;">
+      <div class="report-header">
+        <h2 class="report-title">Latest Report: Mithi River</h2>
+        <span class="report-date">Oct 20, 2025</span>
+      </div>
+      <div class="report-grid">
+        <div class="report-item">
+          <h3>Pollution Type</h3>
+          <p>Plastic & Municipal Waste</p>
+        </div>
+        <div class="report-item">
+          <h3>Location</h3>
+          <p>Kurla-BKC Area</p>
+        </div>
+        <div class="report-item">
+          <h3>Severity</h3>
+          <span class="severity-indicator severity-medium">Medium Risk</span>
+        </div>
+        <div class="report-item">
+          <h3>Reports Count</h3>
+          <p>8 reports in last 24hrs</p>
+        </div>
+      </div>
+      <div class="report-item">
+        <h3>Description</h3>
+        <p>Significant accumulation of plastic waste and debris observed. Local clean-up initiatives ongoing but requiring more support.</p>
+      </div>
+      <div class="actions">
+        <button class="action-button primary-action" onclick="openModal('mithi')">View Full Report</button>
+        <button class="action-button secondary-action" onclick="toggleShareMenu(this, 'mithi')">Share Report</button>
+      </div>
+    </div>
+
+    <!-- Sabarmati Report -->
+    <div id="sabarmati-report" class="report-card" style="display: none;">
+      <div class="report-header">
+        <h2 class="report-title">Latest Report: Sabarmati River</h2>
+        <span class="report-date">Oct 20, 2025</span>
+      </div>
+      <div class="report-grid">
+        <div class="report-item">
+          <h3>Pollution Type</h3>
+          <p>Industrial Effluents</p>
+        </div>
+        <div class="report-item">
+          <h3>Location</h3>
+          <p>Vasna Barrage Area</p>
+        </div>
+        <div class="report-item">
+          <h3>Severity</h3>
+          <span class="severity-indicator severity-high">High Risk</span>
+        </div>
+        <div class="report-item">
+          <h3>Reports Count</h3>
+          <p>12 reports in last 24hrs</p>
+        </div>
+      </div>
+      <div class="report-item">
+        <h3>Description</h3>
+        <p>Industrial discharge causing water quality deterioration. Fish mortality reported in several areas. Immediate action required.</p>
+      </div>
+      <div class="actions">
+        <button class="action-button primary-action" onclick="openModal('sabarmati')">View Full Report</button>
+        <button class="action-button secondary-action" onclick="toggleShareMenu(this, 'sabarmati')">Share Report</button>
+      </div>
+    </div>
+
+    <!-- Brahmaputra Report -->
+    <div id="brahmaputra-report" class="report-card" style="display: none;">
+      <div class="report-header">
+        <h2 class="report-title">Latest Report: Brahmaputra River</h2>
+        <span class="report-date">Oct 20, 2025</span>
+      </div>
+      <div class="report-grid">
+        <div class="report-item">
+          <h3>Pollution Type</h3>
+          <p>Oil Spills & Urban Runoff</p>
+        </div>
+        <div class="report-item">
+          <h3>Location</h3>
+          <p>Guwahati Port Area</p>
+        </div>
+        <div class="report-item">
+          <h3>Severity</h3>
+          <span class="severity-indicator severity-medium">Medium Risk</span>
+        </div>
+        <div class="report-item">
+          <h3>Reports Count</h3>
+          <p>7 reports in last 24hrs</p>
+        </div>
+      </div>
+      <div class="report-item">
+        <h3>Description</h3>
+        <p>Oil slicks spotted near port area. Urban waste accumulation increasing. Local authorities notified for cleanup.</p>
+      </div>
+      <div class="actions">
+        <button class="action-button primary-action" onclick="openModal('brahmaputra')">View Full Report</button>
+        <button class="action-button secondary-action" onclick="toggleShareMenu(this, 'brahmaputra')">Share Report</button>
+      </div>
+    </div>
+
+    <!-- Cauvery Report -->
+    <div id="cauvery-report" class="report-card" style="display: none;">
+      <div class="report-header">
+        <h2 class="report-title">Latest Report: Cauvery River</h2>
+        <span class="report-date">Oct 20, 2025</span>
+      </div>
+      <div class="report-grid">
+        <div class="report-item">
+          <h3>Pollution Type</h3>
+          <p>Agricultural Runoff & Sewage</p>
+        </div>
+        <div class="report-item">
+          <h3>Location</h3>
+          <p>Srirangapatna Region</p>
+        </div>
+        <div class="report-item">
+          <h3>Severity</h3>
+          <span class="severity-indicator severity-high">High Risk</span>
+        </div>
+        <div class="report-item">
+          <h3>Reports Count</h3>
+          <p>14 reports in last 24hrs</p>
+        </div>
+      </div>
+      <div class="report-item">
+        <h3>Description</h3>
+        <p>Excessive agricultural runoff causing algal blooms. Sewage discharge from urban areas affecting water quality. Comprehensive action plan needed.</p>
+      </div>
+      <div class="actions">
+        <button class="action-button primary-action" onclick="openModal('cauvery')">View Full Report</button>
+        <button class="action-button secondary-action" onclick="toggleShareMenu(this, 'cauvery')">Share Report</button>
+      </div>
+    </div>
+
+    <!-- Godavari Report -->
+    <div id="godavari-report" class="report-card" style="display: none;">
+      <div class="report-header">
+        <h2 class="report-title">Latest Report: Godavari River</h2>
+        <span class="report-date">Oct 20, 2025</span>
+      </div>
+      <div class="report-grid">
+        <div class="report-item">
+          <h3>Pollution Type</h3>
+          <p>Religious Waste & Plastic</p>
+        </div>
+        <div class="report-item">
+          <h3>Location</h3>
+          <p>Ramkund, Nashik</p>
+        </div>
+        <div class="report-item">
+          <h3>Severity</h3>
+          <span class="severity-indicator severity-medium">Medium Risk</span>
+        </div>
+        <div class="report-item">
+          <h3>Reports Count</h3>
+          <p>11 reports in last 24hrs</p>
+        </div>
+      </div>
+      <div class="report-item">
+        <h3>Description</h3>
+        <p>Increased religious waste disposal during festival season. Plastic accumulation in sacred spots. Community awareness programs initiated.</p>
+      </div>
+      <div class="actions">
+        <button class="action-button primary-action" onclick="openModal('godavari')">View Full Report</button>
+        <button class="action-button secondary-action" onclick="toggleShareMenu(this, 'godavari')">Share Report</button>
+      </div>
+    </div>
+
+    <!-- Narmada Report -->
+    <div id="narmada-report" class="report-card" style="display: none;">
+      <div class="report-header">
+        <h2 class="report-title">Latest Report: Narmada River</h2>
+        <span class="report-date">Oct 20, 2025</span>
+      </div>
+      <div class="report-grid">
+        <div class="report-item">
+          <h3>Pollution Type</h3>
+          <p>Sand Mining & Construction Waste</p>
+        </div>
+        <div class="report-item">
+          <h3>Location</h3>
+          <p>Bedaghat Region</p>
+        </div>
+        <div class="report-item">
+          <h3>Severity</h3>
+          <span class="severity-indicator severity-medium">Low Risk</span>
+        </div>
+        <div class="report-item">
+          <h3>Reports Count</h3>
+          <p>5 reports in last 24hrs</p>
+        </div>
+      </div>
+      <div class="report-item">
+        <h3>Description</h3>
+        <p>Illegal sand mining activities affecting river ecology. Construction debris disposal observed. Local authorities monitoring situation.</p>
+      </div>
+      <div class="actions">
+        <button class="action-button primary-action" onclick="openModal('narmada')">View Full Report</button>
+        <button class="action-button secondary-action" onclick="toggleShareMenu(this, 'narmada')">Share Report</button>
+      </div>
+    </div>
+
+    <!-- Mandovi Report -->
+    <div id="mandovi-report" class="report-card" style="display: none;">
+      <div class="report-header">
+        <h2 class="report-title">Latest Report: Mandovi River</h2>
+        <span class="report-date">Oct 20, 2025</span>
+      </div>
+      <div class="report-grid">
+        <div class="report-item">
+          <h3>Pollution Type</h3>
+          <p>Industrial & Tourism Waste</p>
+        </div>
+        <div class="report-item">
+          <h3>Location</h3>
+          <p>Old Goa Region</p>
+        </div>
+        <div class="report-item">
+          <h3>Severity</h3>
+          <span class="severity-indicator severity-medium">Medium Risk</span>
+        </div>
+        <div class="report-item">
+          <h3>Reports Count</h3>
+          <p>8 reports in last 24hrs</p>
+        </div>
+      </div>
+      <div class="report-item">
+        <h3>Description</h3>
+        <p>Tourist activities and local industrial waste impacting water quality. Increased boat traffic contributing to pollution. Local authorities implementing new regulations.</p>
+      </div>
+      <div class="actions">
+        <button class="action-button primary-action" onclick="openModal('mandovi')">View Full Report</button>
+        <button class="action-button secondary-action" onclick="toggleShareMenu(this, 'mandovi')">Share Report</button>
+      </div>
+    </div>
+
+    <!-- Zuari Report -->
+    <div id="zuari-report" class="report-card" style="display: none;">
+      <div class="report-header">
+        <h2 class="report-title">Latest Report: Zuari River</h2>
+        <span class="report-date">Oct 20, 2025</span>
+      </div>
+      <div class="report-grid">
+        <div class="report-item">
+          <h3>Pollution Type</h3>
+          <p>Mining Runoff & Port Waste</p>
+        </div>
+        <div class="report-item">
+          <h3>Location</h3>
+          <p>Mormugao Port Area</p>
+        </div>
+        <div class="report-item">
+          <h3>Severity</h3>
+          <span class="severity-indicator severity-high">High Risk</span>
+        </div>
+        <div class="report-item">
+          <h3>Reports Count</h3>
+          <p>12 reports in last 24hrs</p>
+        </div>
+      </div>
+      <div class="report-item">
+        <h3>Description</h3>
+        <p>Heavy metal contamination from mining activities detected. Port operations causing oil spills. Immediate intervention required to protect marine ecosystem.</p>
+      </div>
+      <div class="actions">
+        <button class="action-button primary-action" onclick="openModal('zuari')">View Full Report</button>
+        <button class="action-button secondary-action" onclick="toggleShareMenu(this, 'zuari')">Share Report</button>
+      </div>
+    </div>
+
+    <!-- Chapora Report -->
+    <div id="chapora-report" class="report-card" style="display: none;">
+      <div class="report-header">
+        <h2 class="report-title">Latest Report: Chapora River</h2>
+        <span class="report-date">Oct 20, 2025</span>
+      </div>
+      <div class="report-grid">
+        <div class="report-item">
+          <h3>Pollution Type</h3>
+          <p>Agricultural Runoff & Tourism Impact</p>
+        </div>
+        <div class="report-item">
+          <h3>Location</h3>
+          <p>Chapora Fort Area</p>
+        </div>
+        <div class="report-item">
+          <h3>Severity</h3>
+          <span class="severity-indicator severity-medium">Medium Risk</span>
+        </div>
+        <div class="report-item">
+          <h3>Reports Count</h3>
+          <p>6 reports in last 24hrs</p>
+        </div>
+      </div>
+      <div class="report-item">
+        <h3>Description</h3>
+        <p>Increased tourism activities affecting water quality. Agricultural pesticides detected in water samples. Community-led cleanup initiatives being organized.</p>
+      </div>
+      <div class="actions">
+        <button class="action-button primary-action" onclick="openModal('chapora')">View Full Report</button>
+        <button class="action-button secondary-action" onclick="toggleShareMenu(this, 'chapora')">Share Report</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="social-share-menu" id="shareMenu">
+    <button class="social-share-button facebook">
+      <i class="fab fa-facebook"></i>
+      Share on Facebook
+    </button>
+    <button class="social-share-button twitter">
+      <i class="fab fa-twitter"></i>
+      Share on Twitter
+    </button>
+    <button class="social-share-button whatsapp">
+      <i class="fab fa-whatsapp"></i>
+      Share on WhatsApp
+    </button>
+    <button class="social-share-button telegram">
+      <i class="fab fa-telegram"></i>
+      Share on Telegram
+    </button>
+  </div>
+
+  <!-- Modal for Full Report Details -->
+  <div id="reportModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">Full Report Details</h2>
+        <button class="close-button" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Content will be dynamically populated -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showReport(river) {
+      // Hide all reports first
+      document.querySelectorAll('.report-card').forEach(card => {
+        card.style.display = 'none';
+      });
+      
+      // Show the selected river's report
+      document.getElementById(river + '-report').style.display = 'block';
+      
+      // Scroll to the report smoothly
+      document.getElementById(river + '-report').scrollIntoView({
+        behavior: 'smooth'
+      });
+    }
+
+   
+
+    // Handle social sharing
+    let activeShareButton = null;
+
+    function toggleShareMenu(button, river) {
+      const shareMenu = document.getElementById('shareMenu');
+      const rect = button.getBoundingClientRect();
+      
+      if (activeShareButton === button) {
+        shareMenu.classList.remove('active');
+        activeShareButton = null;
+        return;
+      }
+
+      if (activeShareButton) {
+        shareMenu.classList.remove('active');
+      }
+
+      shareMenu.style.top = `${rect.bottom + window.scrollY + 10}px`;
+      shareMenu.style.left = `${rect.left}px`;
+      shareMenu.classList.add('active');
+      activeShareButton = button;
+
+      // Update share buttons with river-specific links
+      const riverReport = document.getElementById(river + '-report');
+      const riverName = riverReport.querySelector('.report-title').textContent;
+      const shareText = `Check out the latest pollution report for ${riverName}`;
+      
+      document.querySelector('.facebook').onclick = () => shareOnFacebook(shareText);
+      document.querySelector('.twitter').onclick = () => shareOnTwitter(shareText);
+      document.querySelector('.whatsapp').onclick = () => shareOnWhatsApp(shareText);
+      document.querySelector('.telegram').onclick = () => shareOnTelegram(shareText);
+    }
+
+    // Close share menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.secondary-action') && !e.target.closest('#shareMenu')) {
+        document.getElementById('shareMenu').classList.remove('active');
+        activeShareButton = null;
+      }
+    });
+
+    // Social share functions
+    function shareOnFacebook(text) {
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(text)}`, '_blank');
+    }
+
+    function shareOnTwitter(text) {
+      window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`, '_blank');
+    }
+
+        function shareOnWhatsApp(text) {
+          window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + window.location.href)}`, '_blank');
+        }
+
+        function shareOnTelegram(text) {
+          window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        // Modal functionality
+        function openModal(river) {
+          const modal = document.getElementById('reportModal');
+          const modalTitle = document.getElementById('modalTitle');
+          const modalBody = document.getElementById('modalBody');
+          
+          const reportData = getDetailedReportData(river);
+          modalTitle.textContent = `Full Report: ${reportData.name} River`;
+          modalBody.innerHTML = generateModalContent(reportData);
+          
+          modal.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+          const modal = document.getElementById('reportModal');
+          modal.classList.remove('active');
+          document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', (e) => {
+          const modal = document.getElementById('reportModal');
+          if (e.target === modal) {
+            closeModal();
+          }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            closeModal();
+          }
+        });
+
+        // Detailed report data
+        function getDetailedReportData(river) {
+          const reportData = {
+            ganga: {
+              name: 'Ganga',
+              location: 'Varanasi, Uttar Pradesh',
+              severity: 'Critical',
+              severityClass: 'severity-critical',
+              pollutionType: 'Industrial & Chemical Waste',
+              phLevel: '8.2',
+              dissolvedOxygen: '2.1 mg/L',
+              biochemicalOxygen: '12.5 mg/L',
+              totalColiform: '2400 MPN/100ml',
+              temperature: '24°C',
+              turbidity: '45 NTU',
+              recentIncidents: [
+                { date: 'Oct 19, 2025', content: 'Major chemical discharge detected from textile factory upstream' },
+                { date: 'Oct 18, 2025', content: 'Fish mortality reported in 2km stretch near Dashashwamedh Ghat' },
+                { date: 'Oct 17, 2025', content: 'Foam formation observed due to detergent contamination' }
+              ],
+              actionPlan: 'Immediate shutdown of illegal discharge points, enhanced monitoring, and community awareness programs.',
+              authorities: 'Central Pollution Control Board, UP Pollution Control Board',
+              contact: 'emergency@cpcb.nic.in | 1800-11-0031'
+            },
+            yamuna: {
+              name: 'Yamuna',
+              location: 'Delhi',
+              severity: 'Critical',
+              severityClass: 'severity-critical',
+              pollutionType: 'Sewage & Domestic Waste',
+              phLevel: '7.8',
+              dissolvedOxygen: '1.5 mg/L',
+              biochemicalOxygen: '18.2 mg/L',
+              totalColiform: '3200 MPN/100ml',
+              temperature: '26°C',
+              turbidity: '52 NTU',
+              recentIncidents: [
+                { date: 'Oct 20, 2025', content: 'Heavy foam formation at Okhla Barrage due to untreated sewage' },
+                { date: 'Oct 19, 2025', content: 'Black water discharge from Najafgarh drain continues' },
+                { date: 'Oct 18, 2025', content: 'Ammonia levels exceeded permissible limits by 300%' }
+              ],
+              actionPlan: 'Upgrade sewage treatment plants, strict monitoring of drains, and legal action against violators.',
+              authorities: 'Delhi Pollution Control Committee, Yamuna Restoration Project',
+              contact: 'info@dpcc.delhigovt.nic.in | 011-2652-2201'
+            },
+            mithi: {
+              name: 'Mithi',
+              location: 'Mumbai, Maharashtra',
+              severity: 'High',
+              severityClass: 'severity-high',
+              pollutionType: 'Plastic & Municipal Waste',
+              phLevel: '7.4',
+              dissolvedOxygen: '3.2 mg/L',
+              biochemicalOxygen: '8.5 mg/L',
+              totalColiform: '1800 MPN/100ml',
+              temperature: '28°C',
+              turbidity: '38 NTU',
+              recentIncidents: [
+                { date: 'Oct 20, 2025', content: 'Large plastic waste accumulation near Kurla-BKC stretch' },
+                { date: 'Oct 19, 2025', content: 'Oil spill from nearby industrial area contained' },
+                { date: 'Oct 17, 2025', content: 'Community cleanup drive removed 2 tons of debris' }
+              ],
+              actionPlan: 'Regular cleanup drives, plastic waste management, and industrial waste monitoring.',
+              authorities: 'Maharashtra Pollution Control Board, BMC Environment Department',
+              contact: 'mpcb@maharashtra.gov.in | 022-2634-2012'
+            },
+            sabarmati: {
+              name: 'Sabarmati',
+              location: 'Ahmedabad, Gujarat',
+              severity: 'High',
+              severityClass: 'severity-high',
+              pollutionType: 'Industrial Effluents',
+              phLevel: '8.5',
+              dissolvedOxygen: '2.8 mg/L',
+              biochemicalOxygen: '10.2 mg/L',
+              totalColiform: '2100 MPN/100ml',
+              temperature: '25°C',
+              turbidity: '42 NTU',
+              recentIncidents: [
+                { date: 'Oct 20, 2025', content: 'Chemical discharge from pharmaceutical unit detected' },
+                { date: 'Oct 19, 2025', content: 'Fish mortality reported near Vasna Barrage' },
+                { date: 'Oct 18, 2025', content: 'Heavy metal contamination levels increased' }
+              ],
+              actionPlan: 'Industrial audit, effluent treatment upgrades, and real-time monitoring systems.',
+              authorities: 'Gujarat Pollution Control Board, Sabarmati River Front Development',
+              contact: 'gpcb@gujaratindia.com | 079-2656-4000'
+            },
+            brahmaputra: {
+              name: 'Brahmaputra',
+              location: 'Guwahati, Assam',
+              severity: 'Medium',
+              severityClass: 'severity-medium',
+              pollutionType: 'Oil Spills & Urban Runoff',
+              phLevel: '7.2',
+              dissolvedOxygen: '4.1 mg/L',
+              biochemicalOxygen: '6.8 mg/L',
+              totalColiform: '1200 MPN/100ml',
+              temperature: '23°C',
+              turbidity: '28 NTU',
+              recentIncidents: [
+                { date: 'Oct 20, 2025', content: 'Minor oil spill from cargo vessel contained quickly' },
+                { date: 'Oct 19, 2025', content: 'Urban runoff increased due to recent rainfall' },
+                { date: 'Oct 18, 2025', content: 'Port authority implemented new waste management protocols' }
+              ],
+              actionPlan: 'Enhanced port monitoring, oil spill response teams, and urban drainage improvements.',
+              authorities: 'Assam Pollution Control Board, Inland Waterways Authority',
+              contact: 'assampcb@nic.in | 0361-2540-314'
+            },
+            cauvery: {
+              name: 'Cauvery',
+              location: 'Mysuru, Karnataka',
+              severity: 'High',
+              severityClass: 'severity-high',
+              pollutionType: 'Agricultural Runoff & Sewage',
+              phLevel: '8.1',
+              dissolvedOxygen: '2.9 mg/L',
+              biochemicalOxygen: '11.3 mg/L',
+              totalColiform: '2800 MPN/100ml',
+              temperature: '26°C',
+              turbidity: '48 NTU',
+              recentIncidents: [
+                { date: 'Oct 20, 2025', content: 'Algal bloom formation due to excessive nutrient runoff' },
+                { date: 'Oct 19, 2025', content: 'Pesticide residues detected above permissible limits' },
+                { date: 'Oct 18, 2025', content: 'Sewage treatment plant malfunction reported' }
+              ],
+              actionPlan: 'Agricultural practice reforms, sewage infrastructure upgrades, and water quality monitoring.',
+              authorities: 'Karnataka State Pollution Control Board, Cauvery Water Management Authority',
+              contact: 'kspcb@karnataka.gov.in | 080-2558-4467'
+            },
+            godavari: {
+              name: 'Godavari',
+              location: 'Nashik, Maharashtra',
+              severity: 'Medium',
+              severityClass: 'severity-medium',
+              pollutionType: 'Religious Waste & Plastic',
+              phLevel: '7.6',
+              dissolvedOxygen: '3.8 mg/L',
+              biochemicalOxygen: '7.2 mg/L',
+              totalColiform: '1600 MPN/100ml',
+              temperature: '24°C',
+              turbidity: '32 NTU',
+              recentIncidents: [
+                { date: 'Oct 20, 2025', content: 'Festival waste cleanup completed at Ramkund area' },
+                { date: 'Oct 19, 2025', content: 'Plastic waste collection drive by local NGOs' },
+                { date: 'Oct 18, 2025', content: 'Religious ceremony waste management protocols implemented' }
+              ],
+              actionPlan: 'Community awareness programs, waste segregation at source, and eco-friendly festival guidelines.',
+              authorities: 'Maharashtra Pollution Control Board, Nashik Municipal Corporation',
+              contact: 'mpcb@maharashtra.gov.in | 0253-2506-078'
+            },
+            narmada: {
+              name: 'Narmada',
+              location: 'Jabalpur, Madhya Pradesh',
+              severity: 'Low',
+              severityClass: 'severity-low',
+              pollutionType: 'Sand Mining & Construction Waste',
+              phLevel: '7.3',
+              dissolvedOxygen: '5.2 mg/L',
+              biochemicalOxygen: '4.8 mg/L',
+              totalColiform: '800 MPN/100ml',
+              temperature: '22°C',
+              turbidity: '18 NTU',
+              recentIncidents: [
+                { date: 'Oct 20, 2025', content: 'Illegal sand mining operation shut down by authorities' },
+                { date: 'Oct 19, 2025', content: 'Construction debris removal completed' },
+                { date: 'Oct 18, 2025', content: 'Regular monitoring shows improvement in water quality' }
+              ],
+              actionPlan: 'Strict enforcement against illegal mining, construction waste management, and ecosystem restoration.',
+              authorities: 'MP Pollution Control Board, Narmada Valley Development Authority',
+              contact: 'mppcb@mp.gov.in | 0755-2572-302'
+            },
+            mandovi: {
+              name: 'Mandovi',
+              location: 'Panaji, Goa',
+              severity: 'Medium',
+              severityClass: 'severity-medium',
+              pollutionType: 'Industrial & Tourism Waste',
+              phLevel: '7.5',
+              dissolvedOxygen: '3.6 mg/L',
+              biochemicalOxygen: '6.9 mg/L',
+              totalColiform: '1400 MPN/100ml',
+              temperature: '27°C',
+              turbidity: '25 NTU',
+              recentIncidents: [
+                { date: 'Oct 20, 2025', content: 'Tourism waste management protocols updated' },
+                { date: 'Oct 19, 2025', content: 'Industrial effluent monitoring increased' },
+                { date: 'Oct 18, 2025', content: 'Boat traffic regulations implemented' }
+              ],
+              actionPlan: 'Sustainable tourism practices, industrial compliance monitoring, and marine ecosystem protection.',
+              authorities: 'Goa State Pollution Control Board, Goa Tourism Department',
+              contact: 'gspcb@goa.gov.in | 0832-2419-216'
+            },
+            zuari: {
+              name: 'Zuari',
+              location: 'Vasco da Gama, Goa',
+              severity: 'High',
+              severityClass: 'severity-high',
+              pollutionType: 'Mining Runoff & Port Waste',
+              phLevel: '8.3',
+              dissolvedOxygen: '2.4 mg/L',
+              biochemicalOxygen: '9.8 mg/L',
+              totalColiform: '2200 MPN/100ml',
+              temperature: '28°C',
+              turbidity: '51 NTU',
+              recentIncidents: [
+                { date: 'Oct 20, 2025', content: 'Heavy metal contamination detected from mining operations' },
+                { date: 'Oct 19, 2025', content: 'Port oil spill response team activated' },
+                { date: 'Oct 18, 2025', content: 'Marine life impact assessment initiated' }
+              ],
+              actionPlan: 'Mining activity regulation, port waste management upgrades, and marine ecosystem restoration.',
+              authorities: 'Goa State Pollution Control Board, Mormugao Port Trust',
+              contact: 'gspcb@goa.gov.in | 0832-2512-664'
+            },
+            chapora: {
+              name: 'Chapora',
+              location: 'Morjim, Goa',
+              severity: 'Medium',
+              severityClass: 'severity-medium',
+              pollutionType: 'Agricultural Runoff & Tourism Impact',
+              phLevel: '7.4',
+              dissolvedOxygen: '4.0 mg/L',
+              biochemicalOxygen: '6.5 mg/L',
+              totalColiform: '1100 MPN/100ml',
+              temperature: '26°C',
+              turbidity: '22 NTU',
+              recentIncidents: [
+                { date: 'Oct 20, 2025', content: 'Pesticide runoff monitoring increased during harvest season' },
+                { date: 'Oct 19, 2025', content: 'Tourism impact assessment completed' },
+                { date: 'Oct 18, 2025', content: 'Community-led cleanup initiative launched' }
+              ],
+              actionPlan: 'Sustainable agriculture practices, responsible tourism guidelines, and community engagement programs.',
+              authorities: 'Goa State Pollution Control Board, North Goa Collector Office',
+              contact: 'gspcb@goa.gov.in | 0832-2226-725'
+            }
+          };
+          
+          return reportData[river] || {};
+        }
+
+        function generateModalContent(data) {
+          return `
+            <div class="detail-section">
+              <h3>Current Water Quality Parameters</h3>
+              <div class="detail-grid">
+                <div class="detail-item">
+                  <div class="detail-label">pH Level</div>
+                  <div class="detail-value">${data.phLevel}</div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-label">Dissolved Oxygen</div>
+                  <div class="detail-value">${data.dissolvedOxygen}</div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-label">BOD Level</div>
+                  <div class="detail-value">${data.biochemicalOxygen}</div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-label">Total Coliform</div>
+                  <div class="detail-value">${data.totalColiform}</div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-label">Temperature</div>
+                  <div class="detail-value">${data.temperature}</div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-label">Turbidity</div>
+                  <div class="detail-value">${data.turbidity}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="detail-section">
+              <h3>Pollution Assessment</h3>
+              <div class="detail-grid">
+                <div class="detail-item">
+                  <div class="detail-label">Primary Pollution Type</div>
+                  <div class="detail-value">${data.pollutionType}</div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-label">Severity Level</div>
+                  <div class="detail-value ${data.severityClass}">${data.severity}</div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-label">Location</div>
+                  <div class="detail-value">${data.location}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="detail-section">
+              <h3>Recent Incidents Timeline</h3>
+              <div class="timeline">
+                ${data.recentIncidents.map(incident => `
+                  <div class="timeline-item">
+                    <div class="timeline-date">${incident.date}</div>
+                    <div class="timeline-content">${incident.content}</div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <div class="detail-section">
+              <h3>Action Plan & Response</h3>
+              <p style="color: #0f172a; line-height: 1.6; margin-bottom: 20px;">${data.actionPlan}</p>
+              
+              <div class="detail-grid">
+                <div class="detail-item">
+                  <div class="detail-label">Responsible Authorities</div>
+                  <div class="detail-value">${data.authorities}</div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-label">Emergency Contact</div>
+                  <div class="detail-value">${data.contact}</div>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+      </script>
+
+      <!-- Font Awesome for icons -->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    </body>
+  </html>

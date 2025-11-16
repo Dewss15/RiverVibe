@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feedback -RiversVibe</title>
+<link rel="stylesheet" href="style.css">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+body { font-family:'Inter', sans-serif; margin:0; }
+
+/* Feedback header */
+.feedback-header { 
+    text-align:center; 
+    color:white; 
+    padding:80px 20px; 
+    position:relative; 
+    overflow:hidden;
+    background: #00b4d8;
+}
+.feedback-header h1 { 
+    font-size:3rem; 
+    margin-bottom:15px; 
+    text-shadow:1px 1px 5px rgba(0,0,0,0.3);
+}
+.feedback-header p { 
+    font-size:1.2rem; 
+    max-width:700px; 
+    margin:auto; 
+    text-shadow:1px 1px 4px rgba(0,0,0,0.2);
+}
+
+/* Form section background */
+section:nth-of-type(2) {
+    min-height: 100vh;
+    padding: 40px 20px;
+    background: url('https://static.vecteezy.com/system/resources/previews/028/237/379/non_2x/contaminated-water-concept-dirty-water-flows-from-the-pipe-into-the-river-sea-water-pollution-environment-contamination-ai-generative-photo.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+/* Feedback form */
+form {
+  max-width:650px; margin:40px auto; display:flex; flex-direction:column; gap:15px;
+  background:rgba(255, 255, 255, 0.95); padding:30px; border-radius:15px; 
+  box-shadow:0 8px 25px rgba(0,0,0,0.4);
+  backdrop-filter: blur(10px);
+}
+form label { font-weight:500; }
+form input, form select, form textarea { padding:12px; border:1px solid #ccc; border-radius:8px; transition:0.3s; font-size:1rem; }
+form input:focus, form select:focus, form textarea:focus { border-color:#0096c7; box-shadow:0 0 8px rgba(0,150,199,0.5); outline:none; }
+form .gender-options { display:flex; gap:15px; }
+form .gender-options input { width:auto; transform:scale(1.2); cursor:pointer; }
+.btn { padding:14px 28px; border:none; border-radius:30px; background:#ffd60a; color:#222; font-weight:600; text-decoration:none; transition:all 0.3s; cursor:pointer; margin-top:10px; }
+.btn:hover, .btn:focus { background:#ffc300; transform: scale(1.05); }
+
+/* Small floating animation */
+form, .feedback-header { animation: floatUp 2s ease-out; }
+@keyframes floatUp { 0% { transform: translateY(30px); opacity:0; } 100% { transform: translateY(0); opacity:1; } }
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">RiverVibe</div>
+  <ul>
+    <!-- Fixed legacy nav links to PHP endpoints -->
+    <li><a href="index.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <!-- Updated legacy nav to target dashboard.php -->
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="feedback.html" class="active">Feedback</a></li>
+    <li><a href="success.html">Success Stories</a></li>
+  </ul>
+</nav>
+
+<section class="feedback-header">
+  <h1>We Value Your Feedback 💬</h1>
+  <p>Share your experience, report pollution, or give suggestions to help us keep our rivers clean and healthy for everyone.</p>
+</section>
+
+<section>
+  <form action="/submit_report.php" method="post" enctype="multipart/form-data">
+    <label>Name:</label>
+    <input type="text" name="name" placeholder="Your Name">
+
+    <label>Email:</label>
+    <input type="email" placeholder="Your Email">
+
+    <label>Gender:</label>
+    <div class="gender-options">
+      <label><input type="radio" name="gender" value="male"> Male</label>
+      <label><input type="radio" name="gender" value="female"> Female</label>
+      <label><input type="radio" name="gender" value="other"> Other</label>
+    </div>
+
+    <label>River Name:</label>
+    <input type="text" name="river_name" placeholder="Name of River" required>
+
+    <label>Location (City/Area):</label>
+    <input type="text" name="location" placeholder="e.g., Haridwar, Uttarakhand" required>
+
+    <label>Type of Pollution:</label>
+    <select name="pollution_type" required>
+      <option value="Plastic">Plastic</option>
+      <option value="Chemical">Chemical</option>
+      <option value="Sewage">Sewage</option>
+      <option value="Industrial">Industrial</option>
+      <option value="Agricultural">Agricultural</option>
+      <option value="Other">Other</option>
+    </select>
+
+    <label>Describe Issue:</label>
+    <textarea rows="5" name="description" placeholder="Describe the pollution or issue" required></textarea>
+
+    <label>Upload Photo (JPG/PNG up to 2MB):</label>
+    <input type="file" name="photo" accept="image/png, image/jpeg">
+
+    <input type="hidden" name="latitude" id="lat">
+    <input type="hidden" name="longitude" id="lng">
+
+    <button type="submit" class="btn">Submit Feedback</button>
+  </form>
+</section>
+
+<!-- Theme Toggle Button -->
+<button id="theme-toggle" aria-label="Toggle dark mode">
+  <i class="fas fa-moon"></i>
+</button>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="social-links">
+    <a href="https://www.instagram.com/" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+    <a href="https://www.twitter.com/" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+    <a href="https://www.facebook.com/" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+  </div>
+  <p class="footer-slogan">One river cleaned. A thousand lives changed.</p>
+  <p class="footer-credit">&copy; 2025 River Vibe. Built with ❤️ for our planet.</p>
+</footer>
+
+<script>
+  // Try to auto-capture geolocation
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(pos){
+      document.getElementById('lat').value = pos.coords.latitude.toFixed(7);
+      document.getElementById('lng').value = pos.coords.longitude.toFixed(7);
+    }, function(err){ /* silent */ }, { enableHighAccuracy:true, timeout:5000 });
+  }
+</script>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<!-- Link to theme script (loads first to prevent flicker) -->
+<script src="theme.js"></script>
+<!-- Link to main JavaScript file -->
+
+</body>
+</html>

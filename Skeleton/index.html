@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RiverVibe - Home</title>
+<link rel="stylesheet" href="style.css">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/npm/three@0.156.1/build/three.min.js"></script>
+<script src="script.js"></script>
+<nav>
+  <div class="logo">RiverVibe</div>
+  <ul>
+    <!-- Fixed static nav to target PHP endpoints -->
+    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <!-- Unified Dashboard (combines fullrep.html and reports.html) -->
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="feedback.html">Feedback</a></li>
+    <li><a href="success.html">Success Stories</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div id="three-bg"></div>
+  <div class="hero-content">
+    <h1>Speak Up for Our Rivers 🌊</h1>
+    <p>Report pollution in your local rivers and help protect our environment.</p>
+    <!-- Updated CTA to open unified dashboard.html -->
+    <a href="dashboard.html" class="btn">Check local issues</a>
+    <a href="feedback.html" class="btn">Take action now</a>
+  </div>
+</section>
+
+<!-- Info Cards Section -->
+<section class="info-cards-section">
+  <h2 class="text-gradient">How RiverVibe Works</h2>
+  <p>Join thousands of environmental champions making a difference</p>
+  
+  <div class="info-cards-container">
+    <div class="info-card fade-in">
+      <div class="info-card-icon">
+        <i class="fas fa-bullhorn"></i>
+      </div>
+      <h3>Report Pollution</h3>
+      <p>Spotted pollution in your local river? Report it instantly with photos and location data. Your voice matters!</p>
+      <a href="feedback.html" class="btn">Report Now</a>
+    </div>
+
+    <div class="info-card fade-in">
+      <div class="info-card-icon">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <h3>Track Progress</h3>
+      <p>View real-time dashboards showing pollution levels, cleanup efforts, and environmental impact across all rivers.</p>
+      <a href="dashboard.html" class="btn">View Dashboard</a>
+    </div>
+
+    <div class="info-card fade-in">
+      <div class="info-card-icon">
+        <i class="fas fa-heart"></i>
+      </div>
+      <h3>Success Stories</h3>
+      <p>Read inspiring stories from our community and see the positive change we're creating together.</p>
+      <a href="success.html" class="btn">Get Inspired</a>
+    </div>
+  </div>
+</section>
+
+<!-- Theme Toggle Button -->
+<button id="theme-toggle" aria-label="Toggle dark mode">
+  <i class="fas fa-moon"></i>
+</button>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="social-links">
+    <a href="https://www.instagram.com/" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+    <a href="https://www.twitter.com/" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+    <a href="https://www.facebook.com/" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+  </div>
+  <p class="footer-slogan">One river cleaned. A thousand lives changed.</p>
+  <p class="footer-credit">&copy; 2025 River Vibe. Built with ❤️ for our planet.</p>
+</footer>
+
+<!-- Link to theme script (loads first to prevent flicker) -->
+<script src="theme.js"></script>
+<!-- Link to main JavaScript file -->
+
+</body>
+</html>
