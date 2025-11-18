@@ -28,7 +28,7 @@ const mockReportsData = [
     location: 'Varanasi Ghat Area, Uttar Pradesh',
     pollutionType: 'chemical',
     description: 'Multiple instances of chemical discharge observed near the industrial area. Water shows visible discoloration and strong chemical odor. Local wildlife affected. Immediate attention required.',
-    photo: 'https://images.unsplash.com/photo-1599398054066-846f28917f38?w=600',
+    photo: 'https://images.unsplash.com/photo-1599398054066-846f28917f38?w=60',
     status: 'verified',
     dateSubmitted: 'November 10, 2025',
     reportedBy: 'Citizens Group',
@@ -253,7 +253,7 @@ function createReportCard(report, index) {
   const statusClass = `status-${report.status}`;
   
   // Generate QR code URL
-  const reportUrl = `${window.location.origin}/reports.html?id=${report.id}`;
+  const reportUrl = `${window.location.origin}/Webby/dashboard.php?id=${report.id}`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(reportUrl)}&size=120x120`;
   
   card.innerHTML = `
@@ -466,7 +466,7 @@ function viewFullReport(reportId) {
   const modalContent = document.getElementById('modalContent');
   
   // Generate QR code URL
-  const reportUrl = `${window.location.origin}/reports.html?id=${reportId}`;
+  const reportUrl = `${window.location.origin}/Webby/dashboard.php?id=${reportId}`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(reportUrl)}&size=200x200`;
   
   // Build modal content (reuse enhanced modal HTML from reports-enhanced.js)
@@ -533,15 +533,7 @@ function viewFullReport(reportId) {
       </div>
       
       <!-- Share Buttons -->
-      <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px; flex-wrap: wrap;">
-        <button onclick="shareReport(${reportId})" class="action-button primary-action">
-          <i class="fas fa-share-nodes"></i> Share Report
-        </button>
-        <button onclick="copyReportLink('${reportUrl}')" class="action-button secondary-action">
-          <i class="fas fa-copy"></i> Copy Link
-        </button>
-      </div>
-    </div>
+     
   `;
   
   // Show modal with animation
@@ -598,7 +590,7 @@ async function shareReport(reportId) {
   const shareData = {
     title: `RiverVibe Report: ${report.riverName} River`,
     text: `Check out this pollution report on RiverVibe 🌊 - ${report.riverName} River`,
-    url: `${window.location.origin}/reports.html?id=${reportId}`
+    url: `${window.location.origin}/Webby/dashboard.php?id=${reportId}`
   };
   
   // Check if Web Share API is supported
@@ -778,105 +770,8 @@ function scrollToTop() {
 
 // ===== 12. UTILITY: DESKTOP SHARE MENU =====
 
-/**
- * Show desktop share menu (fallback for Web Share API)
- * Reuses functionality from reports-enhanced.js
- */
-function showDesktopShareMenu(shareData) {
-  // Create share menu if it doesn't exist
-  let shareMenu = document.getElementById('customShareMenu');
-  
-  if (!shareMenu) {
-    shareMenu = document.createElement('div');
-    shareMenu.id = 'customShareMenu';
-    shareMenu.style.cssText = `
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: var(--bg-primary, white);
-      border-radius: 16px;
-      padding: 25px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-      z-index: 10001;
-      min-width: 320px;
-    `;
+
     
-    shareMenu.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h3 style="margin: 0; color: var(--text-primary, #1a1a1a); font-size: 1.3rem;">Share Report</h3>
-        <button onclick="closeDesktopShareMenu()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary, #666);">&times;</button>
-      </div>
-      <div id="shareButtons"></div>
-    `;
     
-    document.body.appendChild(shareMenu);
-  }
   
-  // Update share buttons
-  const shareButtons = shareMenu.querySelector('#shareButtons');
-  shareButtons.innerHTML = `
-    <button onclick="shareToWhatsApp('${shareData.text.replace(/'/g, "\\'")}', '${shareData.url}')" class="share-platform-btn">
-      <i class="fab fa-whatsapp" style="color: #25d366;"></i>
-      <span>WhatsApp</span>
-    </button>
-    <button onclick="shareToFacebook('${shareData.url}')" class="share-platform-btn">
-      <i class="fab fa-facebook" style="color: #1877f2;"></i>
-      <span>Facebook</span>
-    </button>
-    <button onclick="shareToTwitter('${shareData.text.replace(/'/g, "\\'")}', '${shareData.url}')" class="share-platform-btn">
-      <i class="fab fa-twitter" style="color: #1da1f2;"></i>
-      <span>Twitter</span>
-    </button>
-    <button onclick="copyReportLink('${shareData.url}')" class="share-platform-btn">
-      <i class="fas fa-copy" style="color: #0096c7;"></i>
-      <span>Copy Link</span>
-    </button>
-  `;
-  
-  shareMenu.style.display = 'block';
-  
-  // Add backdrop
-  let backdrop = document.getElementById('shareBackdrop');
-  if (!backdrop) {
-    backdrop = document.createElement('div');
-    backdrop.id = 'shareBackdrop';
-    backdrop.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(5px);
-      z-index: 10000;
-    `;
-    backdrop.onclick = closeDesktopShareMenu;
-    document.body.insertBefore(backdrop, shareMenu);
-  }
-  backdrop.style.display = 'block';
-}
-
-function closeDesktopShareMenu() {
-  const shareMenu = document.getElementById('customShareMenu');
-  const backdrop = document.getElementById('shareBackdrop');
-  if (shareMenu) shareMenu.style.display = 'none';
-  if (backdrop) backdrop.style.display = 'none';
-}
-
-function shareToWhatsApp(text, url) {
-  window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
-  closeDesktopShareMenu();
-}
-
-function shareToFacebook(url) {
-  window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
-  closeDesktopShareMenu();
-}
-
-function shareToTwitter(text, url) {
-  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
-  closeDesktopShareMenu();
-}
-
 console.log('🌊 RiverVibe Reports Dynamic JS - Loaded Successfully!');

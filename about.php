@@ -427,8 +427,8 @@ include 'components/header.php';
     margin: 80px auto;
     box-shadow: 0 20px 60px rgba(0, 150, 199, 0.4),
                 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-    opacity: 0;
-    transform: translateY(50px);
+    opacity: 1;
+    transform: translateY(50);
     transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
@@ -504,8 +504,9 @@ include 'components/header.php';
     font-size: 2.5rem;
     font-weight: 800;
     letter-spacing: 1px;
-    text-shadow: 0 3px 15px rgba(0, 0, 0, 0.25),
+    text_shadow: 0 3px 15px rgba(0, 0, 0, 0.25),
                  0 0 20px rgba(255, 255, 255, 0.2);
+    text-shadow: none;
     position: relative;
     z-index: 1;
   }

@@ -36,7 +36,16 @@ $is_admin_page = strpos($_SERVER['REQUEST_URI'], '/admin/') !== false;
 <!-- Core JavaScript Files - EXACT ORDER REQUIRED -->
 <script src="/Webby/js/home.js"></script>
 <script src="/Webby/js/app.js"></script>
+
+<?php 
+// Only load dashboard-unified.js on dashboard/report pages
+$current_page = basename($_SERVER['PHP_SELF']);
+$dashboard_pages = ['dashboard.php', 'my_reports.php'];
+if (in_array($current_page, $dashboard_pages)): 
+?>
 <script src="/Webby/js/dashboard-unified.js"></script>
+<?php endif; ?>
+
 <?php endif; ?>
 
 <!-- Page-specific scripts -->

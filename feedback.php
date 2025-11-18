@@ -66,7 +66,7 @@ if (isset($_GET['success']) && $_GET['success'] == '1') {
     $success_message = "Thank you! Your feedback has been submitted successfully. 🌊";
 }
 
-$additional_css = ['
+$additional_css = [<<<CSS
 <style>
 body { font-family:\'Inter\', sans-serif; margin:0; }
 
@@ -98,7 +98,7 @@ body { font-family:\'Inter\', sans-serif; margin:0; }
 section:nth-of-type(2) {
     min-height: 100vh;
     padding: 60px 20px;
-    background: url(\'https://static.vecteezy.com/system/resources/previews/028/237/379/non_2x/contaminated-water-concept-dirty-water-flows-from-the-pipe-into-the-river-sea-water-pollution-environment-contamination-ai-generative-photo.jpg\');
+    background: url("https://static.vecteezy.com/system/resources/previews/028/237/379/non_2x/contaminated-water-concept-dirty-water-flows-from-the-pipe-into-the-river-sea-water-pollution-environment-contamination-ai-generative-photo.jpg");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -373,7 +373,7 @@ body.dark-mode .btn:hover {
 form, .feedback-header { animation: floatUp 2s ease-out; }
 @keyframes floatUp { 0% { transform: translateY(30px); opacity:0; } 100% { transform: translateY(0); opacity:1; } }
 </style>
-'];
+CSS];
 
 include 'components/header.php';
 ?>

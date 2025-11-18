@@ -21,6 +21,7 @@
  * Mock river pollution reports data
  * In production: Replace with fetch(`get_reports.php`) or Supabase query
  */
+/*
 const mockReportsData = [
   {
     id: 1,
@@ -140,6 +141,9 @@ const mockReportsData = [
 let allReports = [];
 let filteredReports = [];
 
+// Fallback image URL
+const fallbackURL = '/Webby/uploads/default-river.jpg'; // Define fallback image
+
 // ===== 2. INITIALIZATION =====
 
 /**
@@ -147,6 +151,15 @@ let filteredReports = [];
  */
 document.addEventListener('DOMContentLoaded', () => {
   console.log('🌊 RiverVibe Reports - Initializing...');
+  
+  // Check if we're on a page with report elements
+  const reportsGrid = document.getElementById('reportsGrid');
+  const loadingSpinner = document.getElementById('loadingSpinner');
+  
+  if (!reportsGrid || !loadingSpinner) {
+    console.log('⚠️ Report elements not found - skipping fetchReports()');
+    return;
+  }
   
   // Fetch and display reports
   fetchReports();
@@ -163,6 +176,78 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('✅ Reports page initialized successfully!');
 });
 
+// ===== AUTO-OPEN MODAL FROM QR CODE =====
+/**
+ * When URL contains ?id=X, automatically open that report's modal
+ * This enables QR code scanning to directly open the report details
+ */
+(function() {
+  // Check if URL has an id parameter
+  if (!window.location.search.includes('id=')) {
+    console.log('📍 No report ID in URL - normal dashboard load');
+    return;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const requestedId = params.get('id');
+  
+  console.log('🔍 QR Code scan detected - Report ID:', requestedId);
+  
+  let attempts = 0;
+  const maxAttempts = 50; // 50 attempts × 200ms = 10 seconds timeout
+  const checkInterval = 200; // Check every 200ms
+  
+  const waitForReports = setInterval(() => {
+    attempts++;
+    
+    // Check if reports are loaded
+    if (typeof allReports !== 'undefined' && 
+        Array.isArray(allReports) && 
+        allReports.length > 0) {
+      
+      clearInterval(waitForReports);
+      console.log(`✅ Reports loaded (${allReports.length} total) after ${attempts * checkInterval}ms`);
+      
+      // Find the report with matching ID (strict string comparison)
+      const foundReport = allReports.find(r => String(r.id) === String(requestedId));
+      
+      if (foundReport) {
+        console.log('✅ Report found:', {
+          id: foundReport.id,
+          riverName: foundReport.riverName,
+          location: foundReport.location
+        });
+        
+        // Small delay to ensure DOM is fully ready
+        setTimeout(() => {
+          console.log('🚀 Opening modal for report ID:', requestedId);
+          viewFullReport(foundReport.id);
+        }, 100);
+        
+      } else {
+        console.warn('⚠️ Report not found with ID:', requestedId);
+        console.log('Available report IDs:', allReports.map(r => r.id));
+      }
+      
+      return;
+    }
+    
+    // Timeout after max attempts
+    if (attempts >= maxAttempts) {
+      clearInterval(waitForReports);
+      console.error('❌ Timeout: Reports failed to load within 10 seconds');
+      console.log('Debug - allReports state:', {
+        defined: typeof allReports !== 'undefined',
+        isArray: Array.isArray(allReports),
+        length: allReports ? allReports.length : 0
+      });
+    }
+    
+  }, checkInterval);
+  
+  console.log('⏳ Waiting for reports to load...');
+})();
+
 // ===== 3. DATA FETCHING =====
 
 /**
@@ -172,58 +257,113 @@ document.addEventListener('DOMContentLoaded', () => {
 async function fetchReports() {
   const loadingSpinner = document.getElementById('loadingSpinner');
   const reportsGrid = document.getElementById('reportsGrid');
+  let dataLoaded = false; // Track if data was successfully loaded
   
   try {
     // Show loading spinner
     loadingSpinner.style.display = 'flex';
     
-    // Fetch from actual PHP API
+    // IMPORTANT: Check the correct API path
     const response = await fetch('/Webby/api_get_reports.php');
-    const data = await response.json();
     
-    if (data.success) {
-      // Transform database format to match frontend expectations
-      allReports = data.reports.map(report => ({
-        id: report.id,
-        riverName: report.river_name,
-        location: report.location,
-        pollutionType: report.pollution_type.toLowerCase(),
-        description: report.description,
-        photo: report.photo_url || 'https://images.unsplash.com/photo-1599398054066-846f28917f38?w=600',
-        status: report.status,
-        dateSubmitted: new Date(report.reported_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-        reportedBy: 'User #' + report.user_id,
-        authorityResponse: report.status === 'verified' ? 'Report has been verified and is under review.' : (report.status === 'resolved' ? 'Issue has been resolved successfully.' : 'Report is pending review.'),
-        coordinates: report.latitude && report.longitude ? `${report.latitude}° N, ${report.longitude}° E` : 'Not available',
-        severity: report.severity,
-        waterQuality: {
-          index: report.water_quality_index || 0,
-          ph: report.ph_level || 7.0,
-          dissolvedOxygen: report.dissolved_oxygen || 0,
-          turbidity: report.turbidity || 0,
-          temperature: report.temperature || 0
-        }
-      }));
-      
-      filteredReports = [...allReports];
-    } else {
-      // Fallback to mock data if API fails
-      allReports = mockReportsData;
-      filteredReports = [...allReports];
+    // Log response for debugging
+    console.log('API Response Status:', response.status);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
     
-    // Hide loading spinner
-    loadingSpinner.style.display = 'none';
+    const data = await response.json();
+    console.log('API Data:', data); // Debug log
     
-    // Render reports
-    renderReports(filteredReports);
+    // ✓ Test 1: Verify data structure
+    if (!data.success || !data.data || !Array.isArray(data.data)) {
+      throw new Error('Invalid API response structure');
+    }
+    
+    // Mark that data was successfully loaded
+    dataLoaded = true;
+    
+    if (data.data.length === 0) {
+      console.warn('⚠️ No reports found in database');
+      allReports = [];
+      filteredReports = [];
+    } else {
+      // Transform database format to match frontend expectations
+      allReports = data.data.map((report, index) => {
+        // ✓ Test 2: Validate required fields exist
+        if (!report.id || !report.river_name || !report.pollution_type) {
+          console.warn(`⚠️ Report ${index} missing required fields:`, report);
+        }
+        
+        // ✓ Test 3: Validate and construct image path
+        const imagePath = report.image ? `/Webby/uploads/${report.image}` : fallbackURL;
+        
+        // ✓ Test 4: Validate date parsing
+        let dateSubmitted = 'Date not available';
+        try {
+          if (report.date_submitted) {
+            dateSubmitted = new Date(report.date_submitted).toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            });
+          }
+        } catch (e) {
+          console.warn(`⚠️ Invalid date for report ${report.id}:`, report.date_submitted);
+        }
+        
+        // ✓ Test 5: Construct and validate QR URL
+        const reportUrl = `${window.location.origin}/Webby/dashboard.php?id=${report.id}`;
+        if (!reportUrl.includes(report.id)) {
+          console.error(`❌ QR URL missing ID for report ${report.id}`);
+        }
+        
+        return {
+          id: report.id,
+          riverName: report.river_name,
+          location: report.location,
+          pollutionType: report.pollution_type ? report.pollution_type.toLowerCase() : 'other',
+          description: report.description || 'No description provided',
+          status: report.status || 'pending',
+          image: imagePath,
+          dateSubmitted: dateSubmitted,
+          reportedBy: report.reported_by || `User #${report.user_id}`,
+          authorityResponse: report.authority_response || '',
+          coordinates: report.location_coordinates || 'Not available',
+          qrCodeUrl: reportUrl,
+          qrCode: report['qr-code'] || '',
+          userId: report.user_id,
+          createdAt: report.created_at
+        };
+      });
+      
+      filteredReports = [...allReports];
+      
+      // ✓ Test 6: Final validation summary
+      console.log('✓ API mapping validated');
+      console.log(`✓ ${allReports.length} reports loaded successfully`);
+      console.log('✓ Sample report structure:', allReports[0]);
+    }
     
   } catch (error) {
-    console.error('Error fetching reports:', error);
-    // Fallback to mock data on error
-    allReports = mockReportsData;
-    filteredReports = [...allReports];
+    console.error('❌ Error fetching reports:', error);
+    
+    // Only show error notification if data failed to load
+    if (!dataLoaded) {
+      showNotification('Failed to load reports. Please check console for details.', 'error');
+    }
+    
+    // Fallback: Set empty array if no data loaded
+    if (!dataLoaded) {
+      allReports = [];
+      filteredReports = [];
+    }
+  } finally {
+    // Always hide loading spinner
     loadingSpinner.style.display = 'none';
+    
+    // Render reports (even if empty)
     renderReports(filteredReports);
   }
 }
@@ -279,11 +419,11 @@ function createReportCard(report, index) {
   const statusBadgeClass = `status-${report.status.toLowerCase()}`;
   
   // Generate QR code URL
-  const reportUrl = `${window.location.origin}/reports.html?id=${report.id}`;
+  const reportUrl = `${window.location.origin}/Webby/dashboard.php?id=${report.id}`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(reportUrl)}&size=120x120`;
   
   card.innerHTML = `
-    <img src="${report.photo}" alt="${report.riverName} River" class="report-card-image" loading="lazy">
+    <img src="${report.image}" alt="${report.riverName} River" class="report-card-image" loading="lazy">
     <div class="report-card-content">
       <div class="report-card-header">
         <h3 class="report-river-name">${report.riverName}</h3>
@@ -525,7 +665,7 @@ function viewFullReport(reportId) {
   const modalContent = document.getElementById('modalContent');
   
   // Generate QR code URL
-  const reportUrl = `${window.location.origin}/reports.html?id=${reportId}`;
+  const reportUrl = `${window.location.origin}/Webby/dashboard.php?id=${reportId}`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(reportUrl)}&size=200x200`;
   
   // Build modal content (reuse enhanced modal HTML from reports-enhanced.js)
@@ -537,7 +677,7 @@ function viewFullReport(reportId) {
       <p style="color: var(--text-secondary); margin-bottom: 30px;">${report.location}</p>
       
       <!-- Report Photo -->
-      <img src="${report.photo}" alt="${report.riverName}" 
+      <img src="${report.image}" alt="${report.riverName}" 
            style="width: 100%; height: 350px; object-fit: cover; border-radius: 16px; margin-bottom: 30px;">
       
       <!-- Status & Info Grid -->
@@ -808,7 +948,7 @@ function shareReport(reportId) {
   const report = allReports.find(r => r.id === reportId);
   if (!report) return;
   
-  const reportUrl = `${window.location.origin}/reports.html?id=${reportId}`;
+  const reportUrl = `${window.location.origin}/Webby/dashboard.php?id=${reportId}`;
   const shareText = `Check out this pollution report: ${report.riverName} River - RiverVibe 🌊`;
   
   showShareMenu(reportUrl, shareText);

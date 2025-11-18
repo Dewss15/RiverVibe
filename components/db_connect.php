@@ -7,22 +7,31 @@
  */
 
 // Database configuration
-define('DB_HOST', 'localhost');
+define('DB_HOST', 'localhost'); // Update if your DB host is different
 define('DB_USER', 'root');
 define('DB_PASS', ''); // Update with your MySQL password
 define('DB_NAME', 'rivervibe_db');
 
-// Create connection
-$conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+// Check if database exists, create if not
+$conn_temp = new mysqli(DB_HOST, DB_USER, DB_PASS);
+if ($conn_temp->connect_error) {
+    error_log("Connection failed: " . $conn_temp->connect_error);
+    http_response_code(500);
+    exit(1);
 }
 
-// Set charset to UTF-8
-$conn->set_charset("utf8mb4");
+$sql = "CREATE DATABASE IF NOT EXISTS " . DB_NAME . " CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+if ($conn_temp->query($sql) === FALSE) {
+    error_log("Error creating database: " . $conn_temp->error);
+}
+$conn_temp->close();
 
-// Optional: Uncomment for debugging
-// echo "<!-- Database connected successfully -->";
-?>
+// Connect to database
+$conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+if ($conn->connect_error) {
+    error_log("Database connection failed: " . $conn->connect_error);
+    http_response_code(500);
+    exit(1);
+}
+
+$conn->set_charset("utf8mb4");

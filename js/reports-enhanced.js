@@ -132,7 +132,7 @@ async function fetchReportData(riverId) {
  * @returns {string} HTML string for modal body
  */
 function generateFullReportHTML(data) {
-  const reportUrl = `${window.location.origin}/reports/${data.name.toLowerCase()}`;
+  const reportUrl = `${window.location.origin}/Webby/dashboard.php?id=${data.id || data.name.toLowerCase()}`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(reportUrl)}&size=150x150`;
   
   // Status badge color

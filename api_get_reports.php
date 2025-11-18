@@ -1,69 +1,83 @@
 <?php
-header('Content-Type: application/json');
-require_once 'components/db_connect.php';
+// Prevent ANY output before JSON
+ob_start();
 
-// Get filter parameters
-$filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
-$pollution_type = isset($_GET['pollution_type']) ? $_GET['pollution_type'] : 'all';
-$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+// Suppress error display (log errors instead)
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+error_reporting(E_ALL);
 
-// Build SQL query
-$sql = "SELECT * FROM river_reports WHERE 1=1";
+// Set JSON header FIRST
+header('Content-Type: application/json; charset=utf-8');
 
-// Apply severity filter
-if ($filter !== 'all') {
-    $sql .= " AND severity = '" . $conn->real_escape_string($filter) . "'";
-}
+// Load database connection
+require_once __DIR__ . '/components/db_connect.php';
 
-// Apply pollution type filter
-if ($pollution_type !== 'all') {
-    $sql .= " AND pollution_type = '" . $conn->real_escape_string($pollution_type) . "'";
-}
+// Initialize response structure
+$response = [
+    "success" => false,
+    "data" => [],
+    "error" => null
+];
 
-// Apply search filter
-if (!empty($search)) {
-    $search_escaped = $conn->real_escape_string($search);
-    $sql .= " AND (river_name LIKE '%$search_escaped%' 
-              OR location LIKE '%$search_escaped%' 
-              OR pollution_type LIKE '%$search_escaped%'
-              OR description LIKE '%$search_escaped%')";
-}
-
-// Order by most recent first
-$sql .= " ORDER BY reported_date DESC";
-
-$result = $conn->query($sql);
-
-$reports = [];
-if ($result && $result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $reports[] = [
-            'id' => $row['id'],
-            'river_name' => $row['river_name'],
-            'location' => $row['location'],
-            'pollution_type' => $row['pollution_type'],
-            'severity' => $row['severity'],
-            'description' => $row['description'],
-            'photo_url' => $row['photo_url'],
-            'latitude' => $row['latitude'],
-            'longitude' => $row['longitude'],
-            'status' => $row['status'],
-            'reported_date' => $row['reported_date'],
-            'user_id' => $row['user_id'],
-            'water_quality_index' => $row['water_quality_index'],
-            'ph_level' => $row['ph_level'],
-            'dissolved_oxygen' => $row['dissolved_oxygen'],
-            'turbidity' => $row['turbidity'],
-            'temperature' => $row['temperature']
-        ];
+try {
+    // Verify database connection exists
+    if (!isset($conn) || $conn->connect_error) {
+        throw new Exception("Database connection failed");
     }
+    
+    // Execute SQL query
+    $sql = "SELECT * FROM river_reports ORDER BY id ASC";
+    $result = $conn->query($sql);
+    
+    if ($result === false) {
+        throw new Exception("Query execution failed: " . $conn->error);
+    }
+    
+    // Process results
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            // Build report object
+            $response["data"][] = [
+                "id" => (int)$row["id"],
+                "river_name" => $row["river_name"] ?? '',
+                "location" => $row["location"] ?? '',
+                "pollution_type" => $row["pollution_type"] ?? '',
+                "description" => $row["description"] ?? '',
+                "image" => $row["image"] ?? null,
+                "status" => $row["status"] ?? 'pending',
+                "date_submitted" => $row["date_submitted"] ?? '',
+                "reported_by" => $row["reported_by"] ?? '',
+                "authority_response" => $row["authority_response"] ?? '',
+                "location_coordinates" => !empty($row["location_coordinates"]) ? $row["location_coordinates"] : 'Not available',
+                "user_id" => isset($row["user_id"]) ? (int)$row["user_id"] : null,
+                "created_at" => $row["created_at"] ?? ''
+            ];
+        }
+        
+        $response["success"] = true;
+    }
+    
+    // Close connection
+    if (isset($conn)) {
+        $conn->close();
+    }
+    
+} catch (Exception $e) {
+    // Log error securely
+    error_log("API Error: " . $e->getMessage());
+    
+    $response["success"] = false;
+    $response["error"] = "Failed to fetch reports";
+    $response["data"] = [];
 }
 
-echo json_encode([
-    'success' => true,
-    'count' => count($reports),
-    'reports' => $reports
-]);
+// Clear any buffered output
+ob_clean();
 
-$conn->close();
-?>
+// Output ONLY valid JSON
+echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+// Flush and end
+ob_end_flush();
+exit;
