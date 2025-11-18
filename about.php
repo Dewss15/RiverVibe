@@ -504,9 +504,8 @@ include 'components/header.php';
     font-size: 2.5rem;
     font-weight: 800;
     letter-spacing: 1px;
-    text_shadow: 0 3px 15px rgba(0, 0, 0, 0.25),
+    text-shadow: 0 3px 15px rgba(0, 0, 0, 0.25),
                  0 0 20px rgba(255, 255, 255, 0.2);
-    text-shadow: none;
     position: relative;
     z-index: 1;
   }

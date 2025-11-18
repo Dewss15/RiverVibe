@@ -329,7 +329,7 @@ async function fetchReports() {
           image: imagePath,
           dateSubmitted: dateSubmitted,
           reportedBy: report.reported_by || `User #${report.user_id}`,
-          authorityResponse: report.authority_response || '',
+          authorityResponse: report.authority_response || 'Awaiting an official update🌿',
           coordinates: report.location_coordinates || 'Not available',
           qrCodeUrl: reportUrl,
           qrCode: report['qr-code'] || '',

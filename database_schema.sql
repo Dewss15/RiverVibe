@@ -4,7 +4,9 @@
 -- Execute this file in phpMyAdmin or MySQL CLI
 -- ========================================
 
-
+ Create database
+CREATE DATABASE IF NOT EXISTS rivervibe_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE rivervibe_db;
 
 -- ========================================
 -- 1. USERS TABLE
